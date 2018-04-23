@@ -51,3 +51,17 @@ class SentryServerSpanObserver(ServerSpanObserver):
         if exc_info is not None:
             self.raven.captureException(exc_info=exc_info)
         self.raven.context.clear(deactivate=True)
+
+
+class SentryUnhandledErrorReporter(object):
+    def __init__(self, hub, raven):
+        self.hub = hub
+        self.raven = raven
+
+    def __call__(self, context, exc_type, value, tb):
+        if not isinstance(exc_type, self.hub.NOT_ERROR):
+            self.hub.print_exception(context, exc_type, value, tb)
+            self.raven.captureException((exc_type, value, tb))
+
+        if isinstance(exc_type, self.hub.SYSTEM_ERROR):
+            self.hub.handle_system_error(exc_type, value)

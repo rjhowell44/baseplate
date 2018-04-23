@@ -635,7 +635,15 @@ class Baseplate(object):
         :param raven.Client client: A configured raven client.
 
         """
-        from .diagnostics.sentry import SentryBaseplateObserver
+        from .diagnostics.sentry import (
+            SentryBaseplateObserver,
+            SentryUnhandledErrorReporter,
+        )
+
+        from gevent import get_hub
+        hub = get_hub()
+        hub.handle_error = SentryUnhandledErrorReporter(hub, client)
+
         self.register(SentryBaseplateObserver(client))
 
     def add_to_context(self, name, context_factory):
