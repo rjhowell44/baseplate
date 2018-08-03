@@ -66,11 +66,7 @@ class AllNode(Targeting):
             self._children.append(create_targeting_tree(node))
 
     def evaluate(self, **kwargs):
-        for node in self._children:
-            if not node.evaluate(**kwargs):
-                return False
-
-        return True
+        return all(node.evaluate(**kwargs) for node in self._children)
 
 
 class AnyNode(Targeting):
@@ -91,11 +87,7 @@ class AnyNode(Targeting):
             self._children.append(create_targeting_tree(node))
 
     def evaluate(self, **kwargs):
-        for node in self._children:
-            if node.evaluate(**kwargs):
-                return True
-
-        return False
+        return any(node.evaluate(**kwargs) for node in self._children)
 
 
 class NotNode(Targeting):
