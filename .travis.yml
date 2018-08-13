@@ -84,7 +84,7 @@ before_install:
 
 script:
     - make
-    - nosetests -v --junit-xml --with-coverage
+    - nosetests -v --with-xunit --with-coverage
     - sphinx-build -M doctest docs/ build/
     - sphinx-build -M spelling docs/ build/
     - make lint
