@@ -84,10 +84,10 @@ before_install:
 
 script:
     - make
-    - nosetests -v
+    - nosetests -v --with-coverage
     - sphinx-build -M doctest docs/ build/
     - sphinx-build -M spelling docs/ build/
     - make lint
 
 after_script:
-  - testspace analysis.xml [tests]results*.xml coverage.xml
+    - testspace analysis.xml [tests]results*.xml coverage.xml
