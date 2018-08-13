@@ -171,11 +171,8 @@ class Experiments(object):
         :rtype: :py:class:`str`
         :return: Variant name if a variant is active, None otherwise.
         """
-        try:
-            experiment = self._get_experiment(name)
-        except (ValueError, TypeError) as err:
-            logger.error("Invalid configiguration for experiment {}: {}".format(name, err))
-            return None
+
+        experiment = self._get_experiment(name)
 
         if experiment is None:
             return None
@@ -236,12 +233,7 @@ class Experiments(object):
 
         """
 
-        try:
-            experiment = self._get_experiment(experiment_name)
-        except:
-            logger.warning("Invalid configiguration for experiment {}"
-                .format(experiment_name))
-            return None
+        experiment = self._get_experiment(experiment_name)
 
         if experiment is None:
             return

@@ -16,6 +16,7 @@ from ..variant_sets.rollout_variant_set import RolloutVariantSet
 
 from ..targeting.tree_targeting import create_targeting_tree
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -37,7 +38,7 @@ def _generate_targeting(targeting_config):
     else:
         try:
             targeting_tree = create_targeting_tree(targeting_config)
-        except (TypeError, ValueError):
+        except Exception:
             targeting_tree = create_targeting_tree({'OVERRIDE': False})
 
     return targeting_tree

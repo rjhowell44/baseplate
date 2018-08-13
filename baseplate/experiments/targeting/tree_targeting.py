@@ -1,6 +1,14 @@
 from .base import Targeting
 
 
+class TargetingNodeError(Exception):
+    pass
+
+
+class UnknownTargetingOperatorError(Exception):
+    pass
+
+
 class EqualNode(Targeting):
     """Used to determine whether an attribute equals a single value or a value
     in a list
@@ -172,13 +180,18 @@ def create_targeting_tree(input_node):
     4. they must have cast 5 votes
 
     """
-    if not len(input_node) == 1:
-        raise ValueError("Call to create_targeting_tree expects a single input key.")
+    if not isinstance(input_node, dict) or not len(input_node) == 1:
+        raise TargetingNodeError("Call to create_targeting_tree expects a single input key.")
 
-    operator = list(input_node.keys())[0]
-    input_node_value = input_node[operator]
+    operator, input_node_value = list(input_node.items())[0]
 
     if operator in OPERATOR_NODE_TYPE_MAPPING:
-        return OPERATOR_NODE_TYPE_MAPPING[operator](input_node_value)
+        try:
+            subnode = OPERATOR_NODE_TYPE_MAPPING[operator](input_node_value)
+            return subnode
+        except (TypeError, ValueError) as e:
+            raise TargetingNodeError("Error while constructing targeting "
+                "tree: {}".format(getattr(e, 'message', None)))
     else:
-        raise ValueError("Unrecognized operator: {}".format(operator))
+        raise UnknownTargetingOperatorError("Unrecognized operator while constructing targeting "
+            "tree: {}".format(operator))

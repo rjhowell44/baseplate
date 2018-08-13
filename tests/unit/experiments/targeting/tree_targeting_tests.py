@@ -14,7 +14,11 @@ from datetime import datetime, timedelta
 
 from baseplate._compat import iteritems, long, range
 from baseplate.core import ServerSpan
-from baseplate.experiments.targeting.tree_targeting import create_targeting_tree
+from baseplate.experiments.targeting.tree_targeting import (
+    create_targeting_tree,
+    TargetingNodeError,
+    UnknownTargetingOperatorError,
+)
 
 from .... import mock
 
@@ -73,14 +77,14 @@ class TestTreeTargeting(unittest.TestCase):
                 {'EQ': {'field': 'user_id', 'values':['t2_1','t2_2','t2_3','t2_4']}},
             ]
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree = create_targeting_tree(config)
 
     def test_create_tree_unknown_operator(self):
         config = get_simple_config()
         config['UNKNOWN'] = config.pop('ALL')
         
-        with self.assertRaises(ValueError):
+        with self.assertRaises(UnknownTargetingOperatorError):
             targeting_tree = create_targeting_tree(config)
 
 
@@ -191,31 +195,31 @@ class TestEqualNode(unittest.TestCase):
         targeting_config_empty = {
             'EQ':{}
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree_empty = create_targeting_tree(targeting_config_empty)
 
         targeting_config_one_arg = {
             'EQ':{'field':'some_field'}
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree_empty = create_targeting_tree(targeting_config_one_arg)
 
         targeting_config_three_args = {
             'EQ':{'field':'some_field', 'values': ['one', True], 'value': 'str_arg'}
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree_empty = create_targeting_tree(targeting_config_three_args)
 
         targeting_config_no_field = {
             'EQ':{'fields':'some_field', 'value': 'str_arg'}
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree_empty = create_targeting_tree(targeting_config_no_field)
 
         targeting_config_no_value = {
             'EQ':{'field':'some_field', 'valu': 'str_arg'}
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree_empty = create_targeting_tree(targeting_config_no_value)
 
 
@@ -238,7 +242,7 @@ class TestNotNode(unittest.TestCase):
         targeting_config_empty = {
             'NOT':{}
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree_empty = create_targeting_tree(targeting_config_empty)
 
         targeting_config_multiple_args = {
@@ -247,7 +251,7 @@ class TestNotNode(unittest.TestCase):
                 'ALL': {'field': 'user_id', 'values':['t2_1','t2_2','t2_3','t2_4']}
             }
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree_empty = create_targeting_tree(targeting_config_empty)
 
 class TestOverrideNode(unittest.TestCase):
@@ -323,7 +327,7 @@ class TestAnyNode(unittest.TestCase):
         targeting_config_not_list = {
             'ANY':{'field':'fieldname', 'value':'notalist'}
         }
-        with self.assertRaises(TypeError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree_not_list = create_targeting_tree(targeting_config_not_list)
 
 
@@ -385,5 +389,5 @@ class TestAllNode(unittest.TestCase):
         targeting_config_not_list = {
             'ALL':{'field':'fieldname', 'value':'notalist'}
         }
-        with self.assertRaises(TypeError):
+        with self.assertRaises(TargetingNodeError):
             targeting_tree_not_list = create_targeting_tree(targeting_config_not_list)
