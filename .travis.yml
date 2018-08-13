@@ -22,7 +22,7 @@ virtualenv:
 before_install:
     - mkdir -p $HOME/bin
     - curl -fsSL https://testspace-client.s3.amazonaws.com/testspace-linux.tgz | tar -zxvf- -C $HOME/bin
-    - testspace config url reddit.testspace.com
+    - testspace config url ${TESTSPACE_TOKEN}:@rjhowell44.testspace.com/
     - sudo add-apt-repository -y ppa:reddit/ppa
     - echo "deb http://debian.datastax.com/community stable main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
     - sudo apt-key add puppet/modules/cassandra/files/repo_key
