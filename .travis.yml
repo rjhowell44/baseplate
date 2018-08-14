@@ -90,4 +90,4 @@ script:
     - make lint
 
 after_script:
-    - testspace nosetests.xml coverage.xml
+    - testspace [py-${TRAVIS_PYTHON_VERSION}]nostests.xml{.} coverage.xml
